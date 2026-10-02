@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT & Management Academic Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+        
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Accordion & Modal Transitions */
+        .accordion-content { transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out; max-height: 0; overflow: hidden; }
+        .accordion-content.expanded { max-height: 500px; padding-top: 1rem; padding-bottom: 1rem; }
+        .rotate-icon { transition: transform 0.3s ease; }
+        .expanded .rotate-icon { transform: rotate(180deg); }
+        
+        /* Image Upload Overlay */
+        .img-upload-overlay { opacity: 0; transition: opacity 0.2s ease; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+        .group:hover .img-upload-overlay { opacity: 1; }
+
+        /* Admin Mode visibility */
+        .admin-only { display: none; }
+        body.admin-mode .admin-only { display: flex; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-primary-500 selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full top-0 z-40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center cursor-pointer hover:opacity-80 transition" onclick="navigate('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white font-bold text-xl shadow-md mr-3">
+                        <i class="fas fa-layer-group text-sm"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-slate-900 leading-tight">Senior Mgmt & IT</h1>
+                        <p class="text-xs text-slate-500 font-medium tracking-wide uppercase">Academic Portfolio</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-2">
+                    <button onclick="navigate('home')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors" data-target="home">Overview</button>
+                    
+                    <div class="relative group">
+                        <button class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-primary-600 hover:bg-slate-50 transition-colors flex items-center">
+                            The Team <i class="fas fa-chevron-down ml-2 text-xs opacity-70"></i>
+                        </button>
+                        <div class="absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-white border border-slate-100 rounded-xl shadow-xl py-2 z-50">
+                            <button onclick="navigate('salik')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600">Salik Ahmad</button>
+                            <button onclick="navigate('marta')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600">Marta Huapu</button>
+                            <button onclick="navigate('sabiri')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600">Sabiri Hajar</button>
+                            <button onclick="navigate('camille')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600">Camille Hetier</button>
+                            <button onclick="navigate('natalia')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary-600">Natalia Vargas</button>
+                        </div>
+                    </div>
+
+                    <div class="w-px h-6 bg-slate-200 mx-2"></div>
+
+                    <button id="editModeToggle" onclick="toggleAdminMode()" class="flex items-center px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all">
+                        <i class="fas fa-sliders-h mr-2"></i> <span>Edit Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app-container" class="pt-24 pb-20 min-h-screen"></main>
+
+    <!-- Generic Modal Overlay for Forms & Deep Dives -->
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300">
+            <!-- Modal Content Injected Here via JS -->
+        </div>
+    </div>
+
+    <!-- Hidden File Input for Image Uploads -->
+    <input type="file" id="global-image-upload" class="hidden" accept="image/*">
+
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">Course Project &copy; 2026. Interactive Academic Portfolio.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- APPLICATION STATE ---
+        // This object acts as our database. Modifying it and re-rendering updates the UI.
+        const state = {
+            currentView: 'home',
+            isAdmin: false,
+            portfolio: {
+                course: "Course Project 2026",
+                title: "IT & Management Academic Portfolio",
+                description: "Showcasing our collaborative journey, strategic planning, and technical execution for the Senior Management and IT curriculum. Click to explore our interactive breakdown of activities and individual contributions.",
+                groupImage: "https://placehold.co/1200x600/e2e8f0/475569?text=Click+to+Upload+Group+Picture"
+            },
+            activities: [
+                { id: 1, title: "1. Ideation & Strategy", icon: "fa-lightbulb", summary: "Brainstorming sessions to align IT solutions with management objectives.", details: "During this phase, the team utilized SWOT analysis and market research to identify gaps in current enterprise systems. We established our core KPIs and defined the project scope to ensure our IT architecture would directly support the overarching business management goals." },
+                { id: 2, title: "2. System Architecture", icon: "fa-sitemap", summary: "Designing the technical blueprint and data flows.", details: "We mapped out the entity-relationship diagrams and selected a microservices architecture. Security protocols were established early on, ensuring that data privacy met current compliance standards. Framework choices were finalized based on scalability requirements." },
+                { id: 3, title: "3. Implementation", icon: "fa-laptop-code", summary: "Agile development sprints and prototyping.", details: "Working in 2-week sprints, the development was split across frontend UI components and backend API endpoints. We utilized continuous integration to merge code daily, allowing for rapid prototyping and immediate feedback from stakeholders." },
+                { id: 4, title: "4. Analysis & QA", icon: "fa-chart-pie", summary: "Rigorous testing and project outcome assessment.", details: "Automated test suites were deployed to catch regressions. User acceptance testing (UAT) was conducted using our high-fidelity prototypes. Final analytics were compiled to compare our achieved metrics against the initial KPIs set in Phase 1." }
+            ],
+            members: {
+                salik: {
+                    id: 'salik', name: "Salik Ahmad", role: "Technical Lead & IT Strategy", theme: "from-blue-900 to-blue-600",
+                    image: "https://placehold.co/400x400/e2e8f0/475569?text=Upload+Salik",
+                    bio: "Responsible for bridging the gap between management objectives and technical capabilities. Led the architecture design phase.",
+                    skills: ["Cloud Computing", "IT Governance", "System Design"],
+                    tasks: [
+                        { title: "System Architecture Documentation", content: "Drafted the core technical specifications, cloud infrastructure requirements, and selected the AWS services needed to host the application securely." },
+                        { title: "API Integration Strategy", content: "Designed the RESTful API endpoints and managed the data pipelines to ensure seamless communication between external services and our core business model." }
+                    ]
+                },
+                marta: {
+                    id: 'marta', name: "Marta Huapu", role: "Project Manager & Business Analyst", theme: "from-emerald-800 to-teal-600",
+                    image: "https://placehold.co/400x400/e2e8f0/475569?text=Upload+Marta",
+                    bio: "Orchestrated project timelines, managed team resources, and conducted in-depth business analysis to ensure high ROI.",
+                    skills: ["Agile / Scrum", "Jira", "Data Analysis"],
+                    tasks: [
+                        { title: "Agile Sprint Planning", content: "Maintained the project Kanban board, organized weekly stand-ups, and proactively mitigated project roadblocks to keep development on schedule." },
+                        { title: "Business Requirements Document (BRD)", content: "Compiled comprehensive documentation mapping every technical feature directly to stakeholder user needs and business objectives." }
+                    ]
+                },
+                sabiri: {
+                    id: 'sabiri', name: "Sabiri Hajar", role: "UI/UX & Frontend Developer", theme: "from-purple-800 to-indigo-600",
+                    image: "https://placehold.co/400x400/e2e8f0/475569?text=Upload+Sabiri",
+                    bio: "Focused on human-computer interaction. Designed wireframes, conducted user testing, and translated designs into functional code.",
+                    skills: ["Figma", "React / HTML", "User Research"],
+                    tasks: [
+                        { title: "High-Fidelity Prototyping", content: "Created interactive Figma prototypes to visualize the user journey, allowing stakeholders to experience the flow before coding began." },
+                        { title: "Frontend Implementation", content: "Developed responsive, accessible web interfaces utilizing modern CSS frameworks to ensure a premium look across all devices." }
+                    ]
+                },
+                camille: {
+                    id: 'camille', name: "Camille Hetier", role: "Database & Backend Specialist", theme: "from-rose-800 to-orange-600",
+                    image: "https://placehold.co/400x400/e2e8f0/475569?text=Upload+Camille",
+                    bio: "Engineered core logic and data storage solutions. Ensured information was securely stored, efficiently queried, and properly modeled.",
+                    skills: ["SQL / NoSQL", "Node.js", "Data Security"],
+                    tasks: [
+                        { title: "Schema Design", content: "Modeled complex relational databases (PostgreSQL) to handle intricate business operations, user profiles, and transactional data." },
+                        { title: "Security & Authentication", content: "Implemented JWT-based authentication flows and ensured all data handling met stringent academic and regulatory privacy standards." }
+                    ]
+                },
+                natalia: {
+                    id: 'natalia', name: "Natalia Vargas Valderrama", role: "Quality Assurance & Operations", theme: "from-amber-600 to-yellow-500",
+                    image: "https://placehold.co/400x400/e2e8f0/475569?text=Upload+Natalia",
+                    bio: "Guaranteed product reliability. Designed test cases, automated operational workflows, and ensured seamless deployment.",
+                    skills: ["QA Testing", "Technical Writing", "DevOps"],
+                    tasks: [
+                        { title: "End-to-End Testing", content: "Executed thorough manual and automated functional tests (using Cypress) to identify and document bugs before final release." },
+                        { title: "Operational Documentation", content: "Authored comprehensive user manuals and deployment guides necessary for the final academic handover and grading." }
+                    ]
+                }
+            }
+        };
+
+        // Variables for Image Upload Context
+        let currentUploadTargetType = null; // 'group' or 'member'
+        let currentUploadTargetId = null;   // member id if applicable
+
+        // --- RENDERING FUNCTIONS ---
+
+        function renderApp() {
+            const container = document.getElementById('app-container');
+            container.innerHTML = ''; // Clear current
+            
+            if (state.currentView === 'home') {
+                container.innerHTML = renderHomeView();
+            } else {
+                container.innerHTML = renderMemberView(state.currentView);
+            }
+            
+            updateNavStyles();
+        }
+
+        function renderHomeView() {
+            let activitiesHtml = state.activities.map(act => `
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col h-full" onclick="openActivityModal(${act.id})">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-primary-600 text-xl group-hover:bg-primary-600 group-hover:text-white transition-colors">
+                            <i class="fas ${act.icon}"></i>
+                        </div>
+                        <button onclick="event.stopPropagation(); openEditActivityModal(${act.id})" class="admin-only text-slate-400 hover:text-primary-600 p-2 rounded-lg hover:bg-slate-50 transition"><i class="fas fa-edit"></i> Edit</button>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">${act.title}</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed flex-grow">${act.summary}</p>
+                    <div class="mt-4 pt-4 border-t border-slate-100 text-primary-600 text-sm font-medium flex items-center group-hover:translate-x-1 transition-transform">
+                        Read Details <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="animate-fade-in">
+                    <!-- Hero Section -->
+                    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+                        <div class="text-center max-w-3xl mx-auto mb-10 relative">
+                            <button onclick="openEditHeroModal()" class="admin-only absolute -right-4 -top-4 bg-white shadow-md border border-slate-200 text-slate-600 hover:text-primary-600 px-3 py-1.5 rounded-lg text-sm font-medium z-10"><i class="fas fa-edit mr-1"></i> Edit Header</button>
+                            <h2 class="text-primary-600 font-bold tracking-widest uppercase text-xs mb-3">${state.portfolio.course}</h2>
+                            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">${state.portfolio.title}</h1>
+                            <p class="text-lg text-slate-600">${state.portfolio.description}</p>
+                        </div>
+
+                        <!-- Interactive Group Picture -->
+                        <div class="relative w-full rounded-3xl overflow-hidden shadow-xl bg-slate-100 group cursor-pointer" onclick="triggerImageUpload('group')">
+                            <img src="${state.portfolio.groupImage}" alt="Group" class="w-full h-[300px] md:h-[500px] object-cover transition-transform duration-700 group-hover:scale-[1.02]">
+                            
+                            <!-- Upload Overlay -->
+                            <div class="img-upload-overlay absolute inset-0 flex flex-col items-center justify-center text-white z-20">
+                                <div class="bg-black/60 px-6 py-3 rounded-full flex items-center shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                                    <i class="fas fa-camera text-xl mr-3"></i> 
+                                    <span class="font-medium text-lg">Upload Group Photo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Activities Section -->
+                    <section class="bg-slate-50 py-16 border-t border-slate-200">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex justify-between items-end mb-10">
+                                <div>
+                                    <h2 class="text-3xl font-bold text-slate-900">Project Timeline & Activities</h2>
+                                    <p class="mt-2 text-slate-500">Click any card to view deep-dive details.</p>
+                                </div>
+                                <button onclick="openAddActivityModal()" class="admin-only bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition items-center">
+                                    <i class="fas fa-plus mr-2"></i> Add Activity
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                ${activitiesHtml}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function renderMemberView(memberId) {
+            const member = state.members[memberId];
+            if(!member) return '<p>Member not found</p>';
+
+            let skillsHtml = member.skills.map(s => `<span class="px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-sm font-medium text-slate-700">${s}</span>`).join('');
+            
+            let tasksHtml = member.tasks.map((task, index) => `
+                <div class="border border-slate-200 rounded-xl mb-4 bg-white overflow-hidden">
+                    <button class="w-full px-6 py-4 flex justify-between items-center text-left focus:outline-none hover:bg-slate-50 transition-colors" onclick="toggleAccordion('task-${index}')">
+                        <span class="font-bold text-slate-800 text-lg">${task.title}</span>
+                        <div class="flex items-center space-x-4">
+                            <span onclick="event.stopPropagation(); openEditTaskModal('${memberId}', ${index})" class="admin-only text-sm text-slate-400 hover:text-primary-600 px-2 py-1 rounded bg-slate-100 hover:bg-primary-50"><i class="fas fa-edit"></i> Edit</span>
+                            <i class="fas fa-chevron-down text-slate-400 rotate-icon"></i>
+                        </div>
+                    </button>
+                    <div id="task-${index}" class="accordion-content bg-slate-50/50 border-t border-slate-100">
+                        <div class="px-6 text-slate-600 leading-relaxed">${task.content}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden relative">
+                        
+                        <button onclick="openEditMemberModal('${member.id}')" class="admin-only absolute right-6 top-6 z-30 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white border border-white/30 px-4 py-2 rounded-xl text-sm font-medium transition"><i class="fas fa-edit mr-2"></i>Edit Profile Info</button>
+
+                        <div class="h-48 bg-gradient-to-r ${member.theme} relative">
+                            <!-- Profile Picture Upload Area -->
+                            <div class="absolute -bottom-16 left-8 md:left-12 group cursor-pointer" onclick="triggerImageUpload('member', '${member.id}')">
+                                <img src="${member.image}" alt="${member.name}" class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl object-cover bg-slate-100">
+                                <div class="img-upload-overlay absolute inset-0 rounded-full flex items-center justify-center text-white border-4 border-transparent">
+                                    <i class="fas fa-camera text-2xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-20 px-8 md:px-12 pb-12">
+                            <div class="mb-10">
+                                <h2 class="text-3xl font-extrabold text-slate-900">${member.name}</h2>
+                                <p class="text-lg font-medium text-slate-500 mt-1">${member.role}</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                                <div class="lg:col-span-2">
+                                    <h3 class="text-xl font-bold mb-4 text-slate-800 flex items-center"><i class="fas fa-bullseye text-primary-500 mr-3"></i> Responsibilities & Tasks</h3>
+                                    
+                                    <div class="mb-8 p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
+                                        <p class="text-slate-700 leading-relaxed italic">"${member.bio}"</p>
+                                    </div>
+
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h4 class="font-bold text-slate-700 uppercase tracking-wide text-sm">Specific Deliverables</h4>
+                                        <button onclick="openAddTaskModal('${member.id}')" class="admin-only text-sm text-primary-600 hover:text-primary-800 font-medium"><i class="fas fa-plus-circle mr-1"></i> Add Task</button>
+                                    </div>
+                                    
+                                    <div class="space-y-2">
+                                        ${tasksHtml}
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-50 p-8 rounded-2xl border border-slate-100 h-fit">
+                                    <h3 class="font-bold text-slate-800 mb-5 flex items-center"><i class="fas fa-tools text-slate-400 mr-2"></i> Core Competencies</h3>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${skillsHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- INTERACTION LOGIC ---
+
+        function navigate(viewId) {
+            state.currentView = viewId;
+            renderApp();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateNavStyles() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === state.currentView) {
+                    btn.classList.add('bg-primary-50', 'text-primary-600');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    btn.classList.remove('bg-primary-50', 'text-primary-600');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+        }
+
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const parent = content.parentElement;
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                parent.classList.remove('ring-2', 'ring-primary-500', 'border-transparent');
+            } else {
+                // Close others
+                document.querySelectorAll('.accordion-content').forEach(el => {
+                    el.classList.remove('expanded');
+                    el.parentElement.classList.remove('ring-2', 'ring-primary-500', 'border-transparent');
+                });
+                // Open clicked
+                content.classList.add('expanded');
+                parent.classList.add('ring-2', 'ring-primary-500', 'border-transparent');
+            }
+        }
+
+        // --- IMAGE UPLOAD LOGIC ---
+        function triggerImageUpload(type, id = null) {
+            currentUploadTargetType = type;
+            currentUploadTargetId = id;
+            document.getElementById('global-image-upload').click();
+        }
+
+        document.getElementById('global-image-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64Src = event.target.result;
+                if (currentUploadTargetType === 'group') {
+                    state.portfolio.groupImage = base64Src;
+                } else if (currentUploadTargetType === 'member' && currentUploadTargetId) {
+                    state.members[currentUploadTargetId].image = base64Src;
+                }
+                renderApp(); // Re-render to show new image
+            };
+            reader.readAsDataURL(file);
+            
+            // Reset input so the same file can be selected again if needed
+            e.target.value = ''; 
+        });
+
+        // --- MODAL SYSTEM ---
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+
+        function openModal(htmlContent) {
+            modalContent.innerHTML = htmlContent;
+            modalOverlay.classList.remove('hidden');
+            // Slight delay to allow display block to apply before animating opacity
+            setTimeout(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+            }, 10);
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal() {
+            modalOverlay.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                modalContent.innerHTML = '';
+            }, 300);
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on outside click
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // --- ADMIN / EDIT FORMS ---
+        
+        function toggleAdminMode() {
+            state.isAdmin = !state.isAdmin;
+            const btn = document.getElementById('editModeToggle');
+            
+            if (state.isAdmin) {
+                document.body.classList.add('admin-mode');
+                btn.innerHTML = '<i class="fas fa-check-circle mr-2 text-emerald-500"></i> <span class="text-emerald-700">Done Editing</span>';
+                btn.classList.replace('bg-slate-100', 'bg-emerald-50');
+                btn.classList.replace('border-slate-200', 'border-emerald-200');
+            } else {
+                document.body.classList.remove('admin-mode');
+                btn.innerHTML = '<i class="fas fa-sliders-h mr-2"></i> <span>Edit Mode</span>';
+                btn.classList.replace('bg-emerald-50', 'bg-slate-100');
+                btn.classList.replace('border-emerald-200', 'border-slate-200');
+            }
+        }
+
+        // View Activity Details Modal
+        function openActivityModal(id) {
+            if(state.isAdmin) return; // Prevent opening detail view when trying to click edit buttons
+            const act = state.activities.find(a => a.id === id);
+            if(!act) return;
+
+            const html = `
+                <div class="p-8">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 text-3xl">
+                            <i class="fas ${act.icon}"></i>
+                        </div>
+                        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+                    </div>
+                    <h2 class="text-3xl font-bold text-slate-900 mb-4">${act.title}</h2>
+                    <p class="text-xl text-slate-600 mb-6 font-medium">${act.summary}</p>
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Detailed Execution</h4>
+                        <p class="text-slate-700 leading-relaxed">${act.details}</p>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        // Edit Main Hero Info
+        function openEditHeroModal() {
+            const html = `
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-xl font-bold text-slate-800">Edit Page Header</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Course/Tagline</label>
+                        <input id="edit-course" type="text" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none" value="${state.portfolio.course}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Main Title</label>
+                        <input id="edit-title" type="text" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none" value="${state.portfolio.title}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                        <textarea id="edit-desc" rows="4" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none">${state.portfolio.description}</textarea>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg mr-2 transition">Cancel</button>
+                        <button onclick="saveHeroDetails()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition shadow-md">Save Changes</button>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        function saveHeroDetails() {
+            state.portfolio.course = document.getElementById('edit-course').value;
+            state.portfolio.title = document.getElementById('edit-title').value;
+            state.portfolio.description = document.getElementById('edit-desc').value;
+            closeModal();
+            renderApp();
+        }
+
+        // Add/Edit Activities
+        function openEditActivityModal(id) {
+            const act = state.activities.find(a => a.id === id);
+            const html = `
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-xl font-bold text-slate-800">Edit Activity</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                        <input id="act-title" type="text" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none" value="${act.title}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">FontAwesome Icon Class</label>
+                        <input id="act-icon" type="text" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none" value="${act.icon}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Short Summary</label>
+                        <textarea id="act-summary" rows="2" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none">${act.summary}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Full Details</label>
+                        <textarea id="act-details" rows="4" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none">${act.details}</textarea>
+                    </div>
+                    <div class="pt-4 flex justify-between items-center">
+                        <button onclick="deleteActivity(${act.id})" class="text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fas fa-trash mr-1"></i> Delete</button>
+                        <div>
+                            <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg mr-2 transition">Cancel</button>
+                            <button onclick="saveActivity(${act.id})" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition shadow-md">Update Activity</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        function openAddActivityModal() {
+            const html = `
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-xl font-bold text-slate-800">Add New Activity</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                        <input id="new-act-title" type="text" placeholder="e.g., 5. Final Presentation" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Icon Class (FontAwesome)</label>
+                        <input id="new-act-icon" type="text" placeholder="e.g., fa-bullhorn" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Short Summary</label>
+                        <textarea id="new-act-summary" rows="2" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Full Details</label>
+                        <textarea id="new-act-details" rows="4" class="w-full border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-primary-500 outline-none"></textarea>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg mr-2 transition">Cancel</button>
+                        <button onclick="addNewActivity()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition shadow-md">Add Activity</button>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        function saveActivity(id) {
+            const act = state.activities.find(a => a.id === id);
+            act.title = document.getElementById('act-title').value;
+            act.icon = document.getElementById('act-icon').value;
+            act.summary = document.getElementById('act-summary').value;
+            act.details = document.getElementById('act-details').value;
+            closeModal();
+            renderApp();
+        }
+
+        function addNewActivity() {
+            const newId = state.activities.length > 0 ? Math.max(...state.activities.map(a => a.id)) + 1 : 1;
+            state.activities.push({
+                id: newId,
+                title: document.getElementById('new-act-title').value || 'New Activity',
+                icon: document.getElementById('new-act-icon').value || 'fa-star',
+                summary: document.getElementById('new-act-summary').value || '...',
+                details: document.getElementById('new-act-details').value || '...'
+            });
+            closeModal();
+            renderApp();
+        }
+
+        function deleteActivity(id) {
+            state.activities = state.activities.filter(a => a.id !== id);
+            closeModal();
+            renderApp();
+        }
+
+        // Edit Member Profile
+        function openEditMemberModal(memberId) {
+            const mem = state.members[memberId];
+            const html = `
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-xl font-bold text-slate-800">Edit Member Profile</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                        <input id="mem-name" type="text" class="w-full border border-slate-300 rounded-lg p-2 outline-none" value="${mem.name}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Role Title</label>
+                        <input id="mem-role" type="text" class="w-full border border-slate-300 rounded-lg p-2 outline-none" value="${mem.role}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Bio / Overview</label>
+                        <textarea id="mem-bio" rows="3" class="w-full border border-slate-300 rounded-lg p-2 outline-none">${mem.bio}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Skills (comma separated)</label>
+                        <input id="mem-skills" type="text" class="w-full border border-slate-300 rounded-lg p-2 outline-none" value="${mem.skills.join(', ')}">
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg mr-2 transition">Cancel</button>
+                        <button onclick="saveMemberProfile('${memberId}')" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition shadow-md">Save Profile</button>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        function saveMemberProfile(memberId) {
+            const mem = state.members[memberId];
+            mem.name = document.getElementById('mem-name').value;
+            mem.role = document.getElementById('mem-role').value;
+            mem.bio = document.getElementById('mem-bio').value;
+            mem.skills = document.getElementById('mem-skills').value.split(',').map(s => s.trim()).filter(s => s);
+            closeModal();
+            renderApp();
+        }
+
+        // Add / Edit Member Tasks
+        function openEditTaskModal(memberId, taskIndex) {
+            const task = state.members[memberId].tasks[taskIndex];
+            const html = `
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-xl font-bold text-slate-800">Edit Task</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Task Title</label>
+                        <input id="task-title" type="text" class="w-full border border-slate-300 rounded-lg p-2 outline-none" value="${task.title}">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Task Description</label>
+                        <textarea id="task-content" rows="5" class="w-full border border-slate-300 rounded-lg p-2 outline-none">${task.content}</textarea>
+                    </div>
+                    <div class="pt-4 flex justify-between items-center">
+                        <button onclick="deleteTask('${memberId}', ${taskIndex})" class="text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fas fa-trash mr-1"></i> Delete</button>
+                        <div>
+                            <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg mr-2 transition">Cancel</button>
+                            <button onclick="saveTask('${memberId}', ${taskIndex})" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition shadow-md">Update Task</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        function saveTask(memberId, taskIndex) {
+            const task = state.members[memberId].tasks[taskIndex];
+            task.title = document.getElementById('task-title').value;
+            task.content = document.getElementById('task-content').value;
+            closeModal();
+            renderApp();
+            
+            // Re-open the accordion that was just edited for good UX
+            setTimeout(() => toggleAccordion(`task-${taskIndex}`), 100);
+        }
+
+        function openAddTaskModal(memberId) {
+            const html = `
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                    <h3 class="text-xl font-bold text-slate-800">Add New Task</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 text-xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Task Title</label>
+                        <input id="new-task-title" type="text" placeholder="e.g., Code Review Management" class="w-full border border-slate-300 rounded-lg p-2 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Task Description</label>
+                        <textarea id="new-task-content" rows="4" placeholder="Describe the execution and outcome..." class="w-full border border-slate-300 rounded-lg p-2 outline-none"></textarea>
+                    </div>
+                    <div class="pt-4 flex justify-end">
+                        <button onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg mr-2 transition">Cancel</button>
+                        <button onclick="addTask('${memberId}')" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition shadow-md">Add Task</button>
+                    </div>
+                </div>
+            `;
+            openModal(html);
+        }
+
+        function addTask(memberId) {
+            state.members[memberId].tasks.push({
+                title: document.getElementById('new-task-title').value || 'New Task',
+                content: document.getElementById('new-task-content').value || 'Task details...'
+            });
+            closeModal();
+            renderApp();
+            
+            // Open the newly added accordion
+            const newIndex = state.members[memberId].tasks.length - 1;
+            setTimeout(() => toggleAccordion(`task-${newIndex}`), 100);
+        }
+
+        function deleteTask(memberId, taskIndex) {
+            state.members[memberId].tasks.splice(taskIndex, 1);
+            closeModal();
+            renderApp();
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderApp();
+        });
+
+    </script>
+</body>
+</html>
